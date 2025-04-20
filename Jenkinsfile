@@ -8,12 +8,6 @@ pipeline {
   }
 
   stages {
-    stage('Checkout') {
-      steps {
-        git credentialsId: "${GIT_CREDENTIALS_ID}", url: 'git@github.com:mohamedtahani/devops-lab.git'
-      }
-    }
-
     stage('Build Backend') {
       steps {
         dir('backend') {
