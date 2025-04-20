@@ -2,6 +2,7 @@ pipeline {
   agent any
 
   environment {
+    GIT_CREDENTIALS_ID = 'github-creds'
     BACKEND_IMAGE = "backend-app"
     FRONTEND_IMAGE = "frontend-app"
   }
@@ -9,7 +10,7 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        git credentialsId: 'github-ssh', url: 'git@github.com:mohamedtahani/devops-lab.git'
+        git credentialsId: "${GIT_CREDENTIALS_ID}", url: 'git@github.com:mohamedtahani/devops-lab.git'
       }
     }
 
