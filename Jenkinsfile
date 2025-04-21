@@ -7,8 +7,6 @@ pipeline {
 
   environment {
     GIT_CREDENTIALS_ID = 'github-creds'
-    BACKEND_IMAGE = "backend-app"
-    FRONTEND_IMAGE = "frontend-app"
     scannerHome = tool 'sonarscanner'
     AWS_REGION = 'us-east-1'
     AWS_ACCOUNT_ID = '890742564895'
@@ -17,7 +15,6 @@ pipeline {
   }
 
   stages {
-
     stage('Run Tests') {
       steps {
         dir('backend') {
@@ -43,18 +40,16 @@ pipeline {
       }
     }
 
-    stage('Build Backend') {
+    stage('Build with Docker Compose') {
       steps {
-        dir('backend') {
-          sh 'docker build -t $BACKEND_IMAGE .'
-        }
+        sh 'docker compose build'
       }
     }
 
-    stage('Build Frontend') {
+    stage('Set Version Tag') {
       steps {
-        dir('frontend') {
-          sh 'docker build -t $FRONTEND_IMAGE .'
+        script {
+          env.VERSION = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
         }
       }
     }
@@ -71,11 +66,30 @@ pipeline {
     stage('Push to ECR') {
       steps {
         sh '''
-          docker tag $BACKEND_IMAGE $ECR_BACKEND_REPO:latest
-          docker tag $FRONTEND_IMAGE $ECR_FRONTEND_REPO:latest
+          # Tag with version
+          docker tag backend-app $ECR_BACKEND_REPO:$VERSION
+          docker tag frontend-app $ECR_FRONTEND_REPO:$VERSION
 
+          # Tag as latest
+          docker tag backend-app $ECR_BACKEND_REPO:latest
+          docker tag frontend-app $ECR_FRONTEND_REPO:latest
+
+          # Push both
+          docker push $ECR_BACKEND_REPO:$VERSION
+          docker push $ECR_FRONTEND_REPO:$VERSION
           docker push $ECR_BACKEND_REPO:latest
           docker push $ECR_FRONTEND_REPO:latest
+        '''
+      }
+    }
+
+    stage('Docker Cleanup') {
+      steps {
+        sh '''
+          docker rmi backend-app frontend-app || true
+          docker rmi $ECR_BACKEND_REPO:$VERSION $ECR_FRONTEND_REPO:$VERSION || true
+          docker rmi $ECR_BACKEND_REPO:latest $ECR_FRONTEND_REPO:latest || true
+          docker system prune -af || true
         '''
       }
     }
@@ -91,6 +105,5 @@ pipeline {
         cleanWs()
       }
     }
-
   }
 }
