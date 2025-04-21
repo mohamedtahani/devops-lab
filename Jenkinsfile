@@ -1,6 +1,8 @@
 pipeline {
   agent any
-
+  tools {
+  nodejs "node18"
+  }
   environment {
     GIT_CREDENTIALS_ID = 'github-creds'
     BACKEND_IMAGE = "backend-app"
