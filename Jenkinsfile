@@ -5,9 +5,40 @@ pipeline {
     GIT_CREDENTIALS_ID = 'github-creds'
     BACKEND_IMAGE = "backend-app"
     FRONTEND_IMAGE = "frontend-app"
+    scannerHome = tool 'sonarscanner'
+
   }
 
   stages {
+    stage('Run Tests') {
+      steps {
+        dir('backend') {
+          sh 'npm ci'
+          sh 'npm test'
+        }
+        dir('frontend') {
+          sh 'npm ci'
+          sh 'npm test'
+        }
+      }
+    }   
+
+    stage('SonarQube Scan') {
+      steps {
+        withSonarQubeEnv('SonarQube') {
+          sh "${scannerHome}/bin/sonar-scanner"
+        }
+      }
+    }
+    stage("Quality Gate") {
+      steps {
+        timeout(time: 2, unit: 'MINUTES') {
+          waitForQualityGate abortPipeline: true
+        }
+      }
+    }
+
+
     stage('Build Backend') {
       steps {
         dir('backend') {
