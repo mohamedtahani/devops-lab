@@ -4,7 +4,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "prebuildtest": "node server.js & sleep 3 && curl -f http://localhost:5000/health && pkill -f server.js || exit 0"
+    "prebuildtest": "node server.js & echo $! > .pidfile && sleep 3 && curl -f http://localhost:5000/health && kill $(cat .pidfile)"
   },
   "keywords": [],
   "author": "",
