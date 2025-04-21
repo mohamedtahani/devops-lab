@@ -10,6 +10,7 @@ services:
       - mongo-data:/data/db
 
   backend:
+    image: backend-app                  
     build: ./backend
     container_name: backend
     ports:
@@ -20,6 +21,7 @@ services:
       - mongodb
 
   frontend:
+    image: frontend-app                
     build: ./frontend
     container_name: frontend
     ports:
