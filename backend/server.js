@@ -32,3 +32,6 @@ app.get('/', async (req, res) => {
 app.listen(port, () => {
   console.log(`🚀 Backend running on http://localhost:${port}`);
 });
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});

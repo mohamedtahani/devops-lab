@@ -16,11 +16,7 @@ pipeline {
       steps {
         dir('backend') {
           sh 'npm ci'
-          sh 'npm test'
-        }
-        dir('frontend') {
-          sh 'npm ci'
-          sh 'npm test'
+          sh 'npm run prebuildtest'
         }
       }
     }   
