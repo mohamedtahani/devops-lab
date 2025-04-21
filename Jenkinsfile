@@ -29,5 +29,10 @@ pipeline {
         sh 'docker images'
       }
     }
+    stage('Cleanup Workspace') {
+      steps {
+        cleanWs()
+      }
+    }
   }
 }
