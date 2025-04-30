@@ -1,0 +1,45 @@
+replicaCount: 1
+
+image:
+  repository: 890742564895.dkr.ecr.us-east-1.amazonaws.com/frontend-app
+  pullPolicy: IfNotPresent
+  tag: latest
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - host: a00ebc9a6914549e2a32c6d435ada24f-1113045722.us-east-1.elb.amazonaws.com
+      paths:
+        - path: /
+          pathType: Prefix
+          serviceName: frontend
+          servicePort: 80
+        - path: /api
+          pathType: Prefix
+          serviceName: backend
+          servicePort: 5000
+
+
+
+
+
+
+serviceAccount:
+  create: false
+  name: ""
+

@@ -4,7 +4,7 @@ function App() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    fetch('http://backend:5000')
+    fetch('/api')
       .then(response => response.text())
       .then(data => setMessage(data));
   }, []);
