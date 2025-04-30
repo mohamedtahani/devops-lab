@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongo-seed
+  namespace: test
+spec:
+  template:
+    spec:
+      containers:
+        - name: mongo
+          image: mongo
+          command: ["mongosh"]
+          args:
+            - "mongodb://mongodb:27017/fullstackapp"
+            - "--eval"
+            - "db.messages.insertOne({ text: 'Nmout ela hubby ana' })"
+      restartPolicy: Never
+  backoffLimit: 1
